@@ -43,7 +43,7 @@ def load_text_to_video_pipeline(device: str = None) -> StableDiffusionPipeline:
     return _PIPELINE
 
 
-def generate_video(prompt: str, output_path: str = "yt_makers_lab_output.mp4", num_inference_steps: int = 30, guidance_scale: float = 7.5, num_frames: int = 4) -> Path:
+def generate_video(prompt: str, output_path: str = "yt_makers_lab_output.mp4", num_inference_steps: int = 30, guidance_scale: float = 7.5, num_frames: int = 4, fps: int = 2) -> Path:
     """Generate a short video from text by creating multiple image frames and saving as MP4."""
     pipe = load_text_to_video_pipeline()
     frames = []
@@ -58,7 +58,10 @@ def generate_video(prompt: str, output_path: str = "yt_makers_lab_output.mp4", n
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
     import imageio
-    imageio.mimwrite(str(output_file), frames, fps=8)
+    imageio.mimwrite(str(output_file), frames, fps=fps)
+    
+    video_duration = num_frames / fps
+    return output_file
 
     return output_file
 
@@ -80,7 +83,10 @@ def run_streamlit_ui():
     output_name = st.text_input("Output file", value="yt_makers_lab_output.mp4")
     steps = st.slider("Inference steps", 10, 50, 30, 1)
     guidance = st.slider("Guidance scale", 1.0, 15.0, 7.5, 0.5)
-    num_frames = st.slider("Number of frames", 2, 6, 4, 1)
+    num_frames = st.slider("Number of frames", 2, 50, 12, 1)
+    fps = st.slider("Frames per second (FPS)", 1, 10, 2, 1)
+    
+    st.info(f"Estimated video duration: {num_frames / fps:.1f} seconds")
 
     if st.button("Generate Video"):
         if not prompt.strip():
@@ -94,6 +100,7 @@ def run_streamlit_ui():
                         num_inference_steps=steps,
                         guidance_scale=guidance,
                         num_frames=num_frames,
+                        fps=fps,
                     )
                     st.success(f"Saved video to: {output_file}")
                     st.video(str(output_file))
