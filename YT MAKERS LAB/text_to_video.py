@@ -3,9 +3,9 @@ import random
 import numpy as np
 import torch
 import streamlit as st
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionXLPipeline
 
-MODEL_ID = "runwayml/stable-diffusion-v1-5"
+MODEL_ID = "stabilityai/stable-diffusion-xl-base-1.0"
 _PIPELINE = None
 
 STICKMAN_PROMPTS = [
@@ -25,7 +25,7 @@ def get_device() -> str:
     return "cuda" if torch.cuda.is_available() else "cpu"
 
 
-def load_text_to_video_pipeline(device: str = None) -> StableDiffusionPipeline:
+def load_text_to_video_pipeline(device: str = None) -> StableDiffusionXLPipeline:
     global _PIPELINE
     if _PIPELINE is not None:
         return _PIPELINE
@@ -33,7 +33,7 @@ def load_text_to_video_pipeline(device: str = None) -> StableDiffusionPipeline:
     device = device or get_device()
     dtype = torch.float16 if device == "cuda" else torch.float32
 
-    _PIPELINE = StableDiffusionPipeline.from_pretrained(
+    _PIPELINE = StableDiffusionXLPipeline.from_pretrained(
         MODEL_ID,
         torch_dtype=dtype,
     )
