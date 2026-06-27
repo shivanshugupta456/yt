@@ -5,7 +5,7 @@ import torch
 import streamlit as st
 from diffusers import StableDiffusionPipeline
 
-MODEL_ID = "stabilityai/stable-diffusion-2-1"
+MODEL_ID = "runwayml/stable-diffusion-v1-5"
 _PIPELINE = None
 
 STICKMAN_PROMPTS = [
